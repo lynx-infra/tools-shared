@@ -1,0 +1,22 @@
+import cpplint
+import format_file_filter
+from checkers.checker import Checker, CheckResult
+
+
+class CpplintChecker(Checker):
+    name = 'cpplint'
+    help = 'Run cpplint'
+
+    def run(self, options, mr, changed_files):
+        for filename in changed_files:
+            if format_file_filter.shouldFormatFile(filename):
+                if options.verbose:
+                    print(('Run cpplint for: %s' % filename))
+                cpplint.ProcessFile(filename, 0)
+        if (cpplint.GetErrorCount()) > 0:
+            print('Please check the following errors:\n')
+            for error in cpplint.GetErrorStingList():
+                print(('    %s' % error))
+            return CheckResult.FAILED
+        else:
+            return CheckResult.PASSED

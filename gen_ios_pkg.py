@@ -41,7 +41,6 @@ def copy_and_generate_podspec(repo_name):
 
 def change_podspec_and_get_source_files(repo_name):
     print('run generate_podspec')
-    run_command(f'bundle install --path ./bundle/')
     run_command('pwd')
     run_command(f'bundle exec pod ipc spec {repo_name}.podspec > {repo_name}.podspec.json')
     content = None

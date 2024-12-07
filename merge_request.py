@@ -52,7 +52,7 @@ class MergeRequest:
 
   # Get changed files of last commit.
   def GetLastCommitFiles(self):
-    command = ['git', 'diff', '--name-only', 'HEAD^', 'HEAD', '--diff-filter=ACMRT']
+    command = ['git', 'show', 'HEAD' ,'--name-only', '--pretty=format:']
     result, error = self.RunCommand(command)
     if error:
       print(('Error: can not get change list of last commit: %s' % (error)))
@@ -66,7 +66,7 @@ class MergeRequest:
 
   # Get commit log of last commit.
   def GetCommitLog(self):
-    command = ['git', 'log', '--format=%B', '-n', '1', 'HEAD^..HEAD']
+    command = ['git', 'log', '--format=%B', '-n', '1']
     result, error = self.RunCommand(command)
     if error:
       print('Error: can not get the commit log of last change.')

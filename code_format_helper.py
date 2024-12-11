@@ -13,17 +13,17 @@ def runCommand(cmd):
   return p.stdout.readlines()
 
 _CHECK_FORMAT_COMMAND= {
-  '.yml': 'npx --quiet --yes prettier',
-  '.yaml': 'npx --quiet --yes prettier',
-  '.ts': 'npx --quiet --yes prettier',
-  '.tsx': 'npx --quiet --yes prettier'
+  '.yml': 'npx --quiet --yes prettier@2.2.1',
+  '.yaml': 'npx --quiet --yes prettier@2.2.1',
+  '.ts': 'npx --quiet --yes prettier@2.2.1',
+  '.tsx': 'npx --quiet --yes prettier@2.2.1'
 }
 
 _CHECK_FORMAT_COMMAND_NO_INSTALL = {
-  '.yml': 'npx --quiet --no-install prettier',
-  '.yaml': 'npx --quiet --no-install prettier',
-  '.ts': 'npx --quiet --no-install prettier',
-  '.tsx': 'npx --quiet --no-install prettier'
+  '.yml': 'npx --quiet --no-install prettier@2.2.1',
+  '.yaml': 'npx --quiet --no-install prettier@2.2.1',
+  '.ts': 'npx --quiet --no-install prettier@2.2.1',
+  '.tsx': 'npx --quiet --no-install prettier@2.2.1'
 }
 
 def get_check_format_command(path):

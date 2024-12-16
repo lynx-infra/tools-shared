@@ -48,7 +48,7 @@ def JavaLint(files):
     for f in files:
         if f.endswith(('.java', '.kt')):
             target_files.append(f)
-
+    print(f"log: {target_files}")
     if len(target_files) > 0:
         # use only check rulesets to check files of merge request
         for rule in only_check_rulesets:
@@ -61,7 +61,7 @@ def JavaLint(files):
             out, err = P.communicate()
             check_msg = out.decode("utf-8")
             cmd_err = err.decode("utf-8")
-
+            print(f"cmd_err,{cmd_err}")
             if P.returncode!=0 and P.returncode!=4:
                 failure_report = is_cmd_fail(cmd_err_=cmd_err)
                 failure_flag = True
@@ -98,7 +98,8 @@ def JavaLint(files):
 
                 if failure_flag:
                     break
-
+    print(f"log: {Prohibition}")
+    print(f"log: {failure_flag}")
     if not Prohibition and not failure_flag:
         print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
         print('[JavaLint] PASSED')

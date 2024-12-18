@@ -14,6 +14,13 @@ BINARY_FILES_ALLOW_LIST = [
     "third_party/binding/idl-codegen/third_party/doc/_static/*",
     "Android/LynxExample/src/main/res/mipmap-xhdpi/*",
     "Android/LynxAndroid/src/main/res/drawable/*"
+    "^explorer/darwin/ios/lynx_explorer/*",
+    "^explorer/darwin/ios/lynx_explorer/*",
+    "^platform/android/gradle/wrapper/*",
+    "^platform/android/lynx_android/src/main/res/*",
+    "^platform/android/lynx_example/*",
+    "^platform/android/lynx_test_bench/*",
+    "platform/android/lynx_devtool/src/main/res/drawable/*"
 ]
 
 

@@ -44,6 +44,7 @@ _FORBIDDEN_DIRS = [
   '^lynx/third_party/base/include/boost/*',
   '^lynx/third_party/(aes|double-conversion|modp_b64|rapidjson|binding|quickjs|napi)/*',
   '^lynx/playground/darwin/ios/LynxExample/LynxExample/Resource/',
+  '^base/include/boost/*',
 ]
 
 def filterFileExtension(path) :

@@ -47,5 +47,13 @@ deps = {
         "ignore_in_git": True,
         "enable_alternate": not is_ttp,
         "condition": system in ['linux', 'darwin'] and not is_ttp,
+    },
+    'buildtools/checkstyle/checkstyle.jar': {
+        "type": "http",
+        "url": "https://github.com/checkstyle/checkstyle/releases/download/checkstyle-9.2.1/checkstyle-9.2.1-all.jar",
+        "sha256": "12a66dfc4afd034da081385717ccb9c028d481313c9873c12ecf7f5cdb09daf6",
+        "ignore_in_git": True,
+        "decompress": False,
+        "condition": system in ['linux', 'darwin'] and not is_ttp,
     }
 }

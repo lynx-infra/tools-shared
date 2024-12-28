@@ -40,7 +40,6 @@ _FORBIDDEN_DIRS = [
   # skip perfetto files
   '^lynx/third_party/trace/native/perfetto/*',
   '^build/*',
-  '^clay/third_party',
   '^lynx/third_party/base/include/boost/*',
   '^lynx/third_party/(aes|double-conversion|modp_b64|rapidjson|binding|quickjs|napi)/*',
   '^lynx/playground/darwin/ios/LynxExample/LynxExample/Resource/',

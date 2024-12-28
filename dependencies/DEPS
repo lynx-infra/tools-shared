@@ -5,7 +5,6 @@ import platform
 machine = platform.machine().lower()
 machine = "x86_64" if machine == "amd64" else machine
 system = platform.system().lower()
-is_ttp = (os.environ.get('IS_TTP') in ['true', 'True', '1'] or os.environ.get('TTP_BUILD_ENV') == 'URL')
 
 base_url = 'https://xxx'
 
@@ -36,7 +35,6 @@ deps = {
             "darwin-arm64": "71720bb0a80cf158d8fdf492def08048befd953ad45e2458b1d095e32c612ba7",
             "windows-x86_64": "db6a81de8e8ca3444495f1bcf04a883c076b4325d0fbaa032a190f88b38b30c5"
         }.get(f'{system}-{machine}', None),
-        "enable_alternate": not is_ttp,
         "ignore_in_git": True,
         "condition": system in ['linux', 'darwin', 'windows']
     },
@@ -45,8 +43,7 @@ deps = {
         "url": "https://github.com/pmd/pmd/releases/download/pmd_releases%2F6.48.0/pmd-bin-6.48.0.zip",
         "sha256": "0d7a2257902e9c319a81fabc0561c5720181bfd39d1a28f90c3bb138a2589c4e",
         "ignore_in_git": True,
-        "enable_alternate": not is_ttp,
-        "condition": system in ['linux', 'darwin'] and not is_ttp,
+        "condition": system in ['linux', 'darwin'],
     },
     'buildtools/checkstyle/checkstyle.jar': {
         "type": "http",
@@ -54,6 +51,6 @@ deps = {
         "sha256": "12a66dfc4afd034da081385717ccb9c028d481313c9873c12ecf7f5cdb09daf6",
         "ignore_in_git": True,
         "decompress": False,
-        "condition": system in ['linux', 'darwin'] and not is_ttp,
+        "condition": system in ['linux', 'darwin'],
     }
 }

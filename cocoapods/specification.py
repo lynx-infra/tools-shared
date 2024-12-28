@@ -381,9 +381,6 @@ class Specification:
             self.convert_xcconfig_for_platform(private_config, xcconfig, None, rebase=rebase)
 
         # FIXME(wangjianliang): find a correct way to fix these temporary solutions
-        if name == 'vmsdk_quickjs':
-            private_config.add_include_dirs("../Headers/Private/vmsdk/quickjs/include")
-            private_config.add_defines("ENABLE_QUICKJS_DEBUGGER")
         if name == 'lottie-ios':
             private_config.add_include_dirs("../Headers/Private/lottie-ios/Lottie")
         if name == 'Mantle':

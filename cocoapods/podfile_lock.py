@@ -25,7 +25,7 @@ def create_source(repo):
 
 class PodfileLock:
 
-    def __init__(self, file_path, cache_dir=None, vmsdk_version=None):
+    def __init__(self, file_path, cache_dir=None):
         self.pods = {}
         self.contents = None
         self.sources = []
@@ -42,10 +42,6 @@ class PodfileLock:
                 list(item)[0] if isinstance(item, dict) else item
             )).groups()
             self.spec_names.append(name)
-
-            if vmsdk_version:
-                version = vmsdk_version
-            print("vmsdk version is ", vmsdk_version)
 
             name_parts = name.split('/', maxsplit=1)
             pod = self.pods.setdefault(name_parts[0], Pod(name_parts[0], version, None, cache_dir=cache_dir))
@@ -73,7 +69,7 @@ class PodfileLock:
             self.sources.append(source)
 
     @classmethod
-    def load_from_file(cls, path, cache_dir=None, vmsdk_version=None):
+    def load_from_file(cls, path, cache_dir=None):
         if not os.path.exists(path):
             raise Exception(f'file {path} not exist')
-        return cls(path, cache_dir=cache_dir, vmsdk_version=vmsdk_version)
+        return cls(path, cache_dir=cache_dir)

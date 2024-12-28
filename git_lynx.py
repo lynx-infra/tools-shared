@@ -187,10 +187,10 @@ def CMDcheck(parser, args):
         'macros-check': ['macro'],
         'cpplint-check': ['cpplint'],
         'java-lint-check': ['java-lint'],
-        'arkts-lint-check': ['arkts-lint'],
         'file-type-and-spell-check': ['file-type', 'spell'],
         'deps-permission-check': ['deps-permission'],
-        'dependency-check': ['deps']
+        'dependency-check': ['deps'],
+        'android-check-style':['android-style'],
     }
     
     

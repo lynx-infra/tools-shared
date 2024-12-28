@@ -63,6 +63,13 @@ class MergeRequest:
       if filename and filename != '':
         file_list.append(filename)
     return file_list
+  
+  def GetLastCommitLines(self):
+    cmd = ['git', 'diff', 'HEAD^', 'HEAD', '-U0']
+    result, error = self.RunCommand(cmd)
+    if error:
+      print(('Error, can not get changed lines of last commit: %s' % error))
+    return result
 
   # Get commit log of last commit.
   def GetCommitLog(self):

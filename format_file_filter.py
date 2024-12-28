@@ -11,18 +11,18 @@ gn_path = 'gn'
 _FILE_EXTENSIONS = ['.java', '.h', '.hpp', '.c', '.cc', '.cpp', '.m', '.mm', '.ts', '.tsx', '.yml', '.yaml', '.gn', '.gni']
 # Commands should be used.
 _FORMAT_COMMAND = {
-    '.yml': ['npx', '--quiet', '--yes', 'prettier -w'],
-    '.yaml': ['npx', '--quiet', '--yes', 'prettier -w'],
-    '.ts': ['npx', '--quiet', '--yes', 'prettier -w'],
-    '.tsx': ['npx', '--quiet', '--yes', 'prettier -w'],
+    '.yml': ['npx', '--quiet', '--yes', 'prettier@2.2.1 -w'],
+    '.yaml': ['npx', '--quiet', '--yes', 'prettier@2.2.1 -w'],
+    '.ts': ['npx', '--quiet', '--yes', 'prettier@2.2.1 -w'],
+    '.tsx': ['npx', '--quiet', '--yes', 'prettier@2.2.1 -w'],
     '.gn': ['{} format '.format(gn_path)],
     '.gni': ['{} format '.format(gn_path)]
 }
 __FORMAT_COMMAND_NO_INSTALL = {
-  '.yml': 'npx --quiet --no-install prettier',
-  '.yaml': 'npx --quiet --no-install prettier',
-  '.ts': 'npx --quiet --no-install prettier',
-  '.tsx': 'npx --quiet --no-install prettier',
+  '.yml': 'npx --quiet --no-install prettier@2.2.1',
+  '.yaml': 'npx --quiet --no-install prettier@2.2.1',
+  '.ts': 'npx --quiet --no-install prettier@2.2.1',
+  '.tsx': 'npx --quiet --no-install prettier@2.2.1',
   '.gn': ['{} format '.format(gn_path)],
   '.gni': ['{} format '.format(gn_path)]
 }
@@ -30,7 +30,21 @@ __FORMAT_COMMAND_NO_INSTALL = {
 _FORBIDDEN_SUFFIXES = ['_jni.h', 'pnpm-lock.yaml', 'Podfile.yml', '.d.ts', '.r.ts']
 # Files in these directories will not be checked.
 _FORBIDDEN_DIRS = [
-  
+   '^core/build/gen/*',
+  '^Lynx/lepus/quickjs/include/*',
+  '^Android/LynxAndroid/src/main/jni/quickjs/*',
+  # skip all folders in oliver except lynx-kernel 
+  '^oliver/(?!(lynx-kernel|type-lynx|type-lynx-test))/*',
+  # skip all folders in third_party except
+  '^third_party/*',
+  # skip perfetto files
+  '^lynx/third_party/trace/native/perfetto/*',
+  '^build/*',
+  '^clay/third_party',
+  '^lynx/third_party/base/include/boost/*',
+  '^lynx/third_party/(aes|double-conversion|modp_b64|rapidjson|binding|quickjs|napi)/*',
+  '^lynx/playground/darwin/ios/LynxExample/LynxExample/Resource/',
+  '^base/include/boost/*',
 ]
 
 def filterFileExtension(path) :

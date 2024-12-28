@@ -16,8 +16,7 @@ export NPM_CONFIG_UPDATE_NOTIFIER=false
 
 export BUILDTOOLS_DIR="${BASEDIR}/buildtools"
 export PATH=$BASEDIR:${BUILDTOOLS_DIR}/clang-format:${BUILDTOOLS_DIR}/gn:${BUILDTOOLS_DIR}/node/bin:$PATH
-python3 $BASEDIR/envsetup.py "$@"
 
 pushd $BASEDIR > /dev/null
-$BASEDIR/lcm sync
+$BASEDIR/hab sync
 popd > /dev/null

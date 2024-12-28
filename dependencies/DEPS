@@ -12,13 +12,12 @@ base_url = 'https://xxx'
 deps = {
     'buildtools/clang-format': {
         "type": "http",
-        "url": f"{base_url}/external/tools/clang-format/git_revision:020d2fb7711d70e296f19d83565f8d93d2cfda71/clang-format-{system}-{machine}.tar.gz",
+        "url": f"https://github.com/scanf3/buildtools/releases/download/clang-format-08947632/buildtools-clang-format-{system}-{machine}.tar.gz",
         "ignore_in_git": True,
-        "condition": system in ['linux', 'darwin'] and not is_ttp,
     },
     'buildtools/gn': {
         "type": "http",
-        "url": f"{base_url}/external/buildtools/gn/git_revision:cc28efe62ef0c2fb32455f414a29c4a55bb7fbc4/gn-{system}-{machine}.zip",
+        "url": f"https://github.com/lynx-infra/buildtools/releases/download/gn-cc28efe6/buildtools-gn-{system}-{machine}.tar.gz",
         "ignore_in_git": True,
     },
     'buildtools/node': {

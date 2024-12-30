@@ -20,7 +20,10 @@ BINARY_FILES_ALLOW_LIST = [
     "^platform/android/lynx_android/src/main/res/*",
     "^platform/android/lynx_example/*",
     "^platform/android/lynx_test_bench/*",
-    "platform/android/lynx_devtool/src/main/res/drawable/*"
+    "platform/android/lynx_devtool/src/main/res/drawable/*",
+    "explorer/android/gradle/*",
+    "explorer/android/lynx_explorer/*",
+    "explorer/android/lynx_explorer/src/main/res"
 ]
 
 

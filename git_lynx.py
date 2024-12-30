@@ -84,14 +84,6 @@ def CMDbuild(parser, args):
         action='store_true',
         help='If --debug, Build debug ut')
     parser.add_option(
-        '--canvas-conformance-tests',
-        action='store_true',
-        help='Check canvas conformance tests build')
-    parser.add_option(
-        '--canvas-performance-tests',
-        action='store_true',
-        help='Check canvas performance report build')
-    parser.add_option(
         '--enable-relax-tests',
         action='store_true',
         help='Check relax tests build')
@@ -112,7 +104,7 @@ def CMDbuild(parser, args):
     old_cwd = os.getcwd()
     os.chdir(root_directory)
     try:
-        if options.unittests or options.canvas_conformance_tests or options.canvas_performance_tests:
+        if options.unittests:
             CheckTestTargetBuild(options)
         elif options.encoder_ut:
             CheckEncoderUTBuild(options)
@@ -187,10 +179,10 @@ def CMDcheck(parser, args):
         'macros-check': ['macro'],
         'cpplint-check': ['cpplint'],
         'java-lint-check': ['java-lint'],
-        'arkts-lint-check': ['arkts-lint'],
         'file-type-and-spell-check': ['file-type', 'spell'],
         'deps-permission-check': ['deps-permission'],
-        'dependency-check': ['deps']
+        'dependency-check': ['deps'],
+        'android-check-style':['android-style'],
     }
     
     

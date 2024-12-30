@@ -23,17 +23,6 @@ def run_command(command):
     print(f'run command: {command}')
     res = subprocess.run(['bash', '-c', command], stderr=subprocess.STDOUT, check=True, text=True)
 
-def replace_vmsdk_version(version):
-    lines = []
-    with open('monitor/VmsdkVersion.m', 'r') as f:
-        lines = f.readlines()
-    with open('monitor/VmsdkVersion.m', 'w') as f:
-        for line in lines:
-            if '#define VMSDK_POD_VERSION' in line:
-                f.write(f'#define VMSDK_POD_VERSION @"9999_{version}"\n')
-            else:
-                f.write(f'{line}')
-
 def change_podspec_and_get_source_files(repo_name):
     print('run generate_podspec')
     run_command(f'bundle install --path ./bundle/')

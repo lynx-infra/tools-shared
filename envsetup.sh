@@ -16,7 +16,3 @@ export NPM_CONFIG_UPDATE_NOTIFIER=false
 
 export BUILDTOOLS_DIR="${BASEDIR}/buildtools"
 export PATH=$BASEDIR:${BUILDTOOLS_DIR}/clang-format:${BUILDTOOLS_DIR}/gn:${BUILDTOOLS_DIR}/node/bin:$PATH
-
-pushd $BASEDIR > /dev/null
-$BASEDIR/hab sync
-popd > /dev/null

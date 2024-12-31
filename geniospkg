@@ -45,4 +45,4 @@ if [ $DELETE == 'true' ]; then
     DELETE_VALUE="--delete"
 fi
 
-python3 $BASENAME/gen_ios_pkg.py --env $PACKAGE_ENV --repo $1 $REPLACE_SOURCE_VALUE $DELETE_VALUE
+python3 $BASENAME/gen_ios_pkg.py --env $PACKAGE_ENV --repo $1 $REPLACE_SOURCE_VALUE $DELETE_VALUE --tag $POD_TAG

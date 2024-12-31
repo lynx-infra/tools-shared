@@ -15,13 +15,13 @@ import shutil
 
 target_dir = 'source_package'
 
-def run_command(command):
+def run_command(command,check=True):
     # When the "command" is a multi-line command, only the status of the last line of the command is checked.
     # Therefore, it is necessary to add "set -e" to ensure that any error in any line of the command will cause the script to exit immediately.
     command = 'set -e\n' + command
 
     print(f'run command: {command}')
-    res = subprocess.run(['bash', '-c', command], stderr=subprocess.STDOUT, check=True, text=True)
+    res = subprocess.run(['bash', '-c', command], stderr=subprocess.STDOUT, check=check, text=True)
 
 def change_podspec_and_get_source_files(repo_name):
     print('run generate_podspec')
@@ -169,16 +169,16 @@ def main():
         if args.package_dir:
             # move all files under package_dir
             tmp_dir = 'tmp_dir'
-            run_command(f'mkdir ${tmp_dir}')
+            run_command(f'mkdir {tmp_dir}')
             run_command(f'mv {target_dir}/* {tmp_dir}')
             # move hidden files
-            run_command(f'mv {target_dir}/.* {tmp_dir}')
+            run_command(f'mv {target_dir}/.* {tmp_dir}',check=False)
             
             run_command(f'mkdir {target_dir}/{args.package_dir}')
-            run_command(f'mkdir {tmp_dir}/* {target_dir}')
-            run_command(f'mkdir {tmp_dir}/.* {target_dir}')
-        else:
-            run_command(f'cd {target_dir} && zip -r ../{repo_name}.zip * -x "*.zip"')
+            run_command(f'mv {tmp_dir}/* {target_dir}/{args.package_dir}')
+            run_command(f'mv {tmp_dir}/.* {target_dir}/{args.package_dir}',check=False)
+            
+        run_command(f'cd {target_dir} && zip -r ../{repo_name}.zip * -x "*.zip"')
     else:
         run_command(f'zip -r {repo_name}.zip * -x "*.zip"')
 

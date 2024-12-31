@@ -135,7 +135,6 @@ def replace_source_of_podspec(repo_name,tag):
 
 def main():
     parser = argparse.ArgumentParser(description='Generate a iOS source code zip')
-    parser.add_argument('--env', type=str, help='Path to the private PEM file', required=True)
     parser.add_argument('--replace_source', action="store_true", help='Replace the source of podspec')
     parser.add_argument('--repo', type=str, help='Replace the source of podspec')
     parser.add_argument('--delete',action="store_true",help='Whether to delete files other than the source code package')
@@ -143,14 +142,7 @@ def main():
     parser.add_argument('--package_dir',type=str,help='The root dir of package')
     args = parser.parse_args()
   
-    package_env = args.env
-    print(f"run in {package_env} environment")
     repo_name = args.repo
-    if not repo_name and package_env=='prod':
-        repo_name = os.environ.get('repo_name') or os.environ.get('repoName')
-    print(f"repo_name: {repo_name}")
-
-
     source_dirs = ['build']
     source_files = change_podspec_and_get_source_files(repo_name)
     

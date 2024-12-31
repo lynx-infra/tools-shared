@@ -37,12 +37,4 @@ elif [ "$PACKAGE_ENV" = "prod" ]; then
     echo -e "\033[31mWarning: Please note that the non-packaged files will be deleted in the prod environment.\033[0m"
 fi
 
-if [ $REPLACE_SOURCE == 'true' ]; then
-    REPLACE_SOURCE_VALUE="--replace_source"
-fi
-
-if [ $DELETE == 'true' ]; then
-    DELETE_VALUE="--delete"
-fi
-
-python3 $BASENAME/gen_ios_pkg.py --env $PACKAGE_ENV --repo $1 $REPLACE_SOURCE_VALUE $DELETE_VALUE
+python3 $BASENAME/gen_ios_pkg.py "$@"

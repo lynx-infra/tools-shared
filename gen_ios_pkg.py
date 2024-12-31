@@ -15,13 +15,13 @@ import shutil
 
 target_dir = 'source_package'
 
-def run_command(command):
+def run_command(command,check=True):
     # When the "command" is a multi-line command, only the status of the last line of the command is checked.
     # Therefore, it is necessary to add "set -e" to ensure that any error in any line of the command will cause the script to exit immediately.
     command = 'set -e\n' + command
 
     print(f'run command: {command}')
-    res = subprocess.run(['bash', '-c', command], stderr=subprocess.STDOUT, check=True, text=True)
+    res = subprocess.run(['bash', '-c', command], stderr=subprocess.STDOUT, check=check, text=True)
 
 def change_podspec_and_get_source_files(repo_name):
     print('run generate_podspec')
@@ -92,7 +92,7 @@ def copy_to_target_folder(source_files,repo_name,source_dirs):
     source_files = [os.path.join(current_directory,file_name) for file_name in source_files]
     source_dirs_list = [os.path.join(current_directory,'.github')]
     for root, dirnames, filenames in os.walk(current_directory):
-        # exclude target file in os.wall
+        # exclude target file in os.walk
         dirnames[:] = [d for d in dirnames if d != target_dir]
         
         if root in source_dirs_list:
@@ -114,7 +114,7 @@ def copy_to_target_folder(source_files,repo_name,source_dirs):
                 shutil.copyfile(relative_path,os.path.join(target_dir,relative_path))
                 continue
     
-def replace_source_of_podspec(repo_name):
+def replace_source_of_podspec(repo_name,tag):
     # only for github
     content = None
     with open(f'{repo_name}.podspec', 'r') as f:
@@ -125,30 +125,24 @@ def replace_source_of_podspec(repo_name):
     ref = os.environ.get('GITHUB_REF')
     if ref:
         ref= ref.replace("refs/tags/","")
-    target_string=f's.source = {{ :http =>  "https://github.com/{source_code_repo}/releases/download/{ref}/{repo_name}.zip" }}'
+    target_string=f's.source = {{ :http =>  "https://github.com/{source_code_repo}/releases/download/{tag}/{repo_name}.zip" }}'
     new_content = re.sub(pattern, target_string, content)
     # update the podspec
     with open(f'{repo_name}.podspec', 'w') as f:
         f.write(new_content)
         
-    # run_command(f'bundle exec pod ipc spec {repo_name}.podspec > {repo_name}.podspec.json')
+    run_command(f'bundle exec pod ipc spec {repo_name}.podspec > {repo_name}.podspec.json')
 
 def main():
     parser = argparse.ArgumentParser(description='Generate a iOS source code zip')
-    parser.add_argument('--env', type=str, help='Path to the private PEM file', required=True)
     parser.add_argument('--replace_source', action="store_true", help='Replace the source of podspec')
     parser.add_argument('--repo', type=str, help='Replace the source of podspec')
     parser.add_argument('--delete',action="store_true",help='Whether to delete files other than the source code package')
+    parser.add_argument('--tag',type=str,help='The tag of pod')
+    parser.add_argument('--package_dir',type=str,help='The root dir of package')
     args = parser.parse_args()
   
-    package_env = args.env
-    print(f"run in {package_env} environment")
     repo_name = args.repo
-    if not repo_name and package_env=='prod':
-        repo_name = os.environ.get('repo_name') or os.environ.get('repoName')
-    print(f"repo_name: {repo_name}")
-
-
     source_dirs = ['build']
     source_files = change_podspec_and_get_source_files(repo_name)
     
@@ -160,10 +154,22 @@ def main():
     if args.replace_source:
         # replace the source of podspec
         print("start replacing source of podspec")
-        replace_source_of_podspec(repo_name)
-    
+        replace_source_of_podspec(repo_name, args.tag)
+        
     # get the zip package
     if not args.delete:
+        if args.package_dir:
+            # move all files under package_dir
+            tmp_dir = 'tmp_dir'
+            run_command(f'mkdir {tmp_dir}')
+            run_command(f'mv {target_dir}/* {tmp_dir}')
+            # move hidden files
+            run_command(f'mv {target_dir}/.* {tmp_dir}',check=False)
+            
+            run_command(f'mkdir {target_dir}/{args.package_dir}')
+            run_command(f'mv {tmp_dir}/* {target_dir}/{args.package_dir}')
+            run_command(f'mv {tmp_dir}/.* {target_dir}/{args.package_dir}',check=False)
+            
         run_command(f'cd {target_dir} && zip -r ../{repo_name}.zip * -x "*.zip"')
     else:
         run_command(f'zip -r {repo_name}.zip * -x "*.zip"')

@@ -8,4 +8,4 @@ from cocoapods.targets.gn.base_target import BaseTarget
 
 class SharedLibrary(BaseTarget):
 
-    type = 'shared_library'
+    type = "shared_library"

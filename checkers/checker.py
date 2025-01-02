@@ -38,7 +38,9 @@ class Checker:
     def get_file_name(self, key):
         return self._file_name_cache.get(key)
 
-    def _check_changed_lines(self, options, changed_files, changed_lines, verbose=False):
+    def _check_changed_lines(
+        self, options, changed_files, changed_lines, verbose=False
+    ):
         current_file = None
         current_start_line = 0
         current_lines = []
@@ -50,25 +52,25 @@ class Checker:
                 sections.append((key, start_line, lines))
 
         for line in changed_lines:
-            if line.startswith('-'):
+            if line.startswith("-"):
                 continue
-            elif line.startswith('+++'):
+            elif line.startswith("+++"):
                 finish_section(current_file, current_start_line, current_lines)
                 current_lines = []
-                matches = re.match(r'\+\+\+ b/(.*)', line)
+                matches = re.match(r"\+\+\+ b/(.*)", line)
                 if not matches:
                     continue
-                current_file, = matches.groups()
-            elif line.startswith('@@'):
+                (current_file,) = matches.groups()
+            elif line.startswith("@@"):
                 finish_section(current_file, current_start_line, current_lines)
                 current_lines = []
 
-                matches = re.match(r'@@ -\d+(,\d+)? \+(\d+)(,\d+)? @@.*', line)
+                matches = re.match(r"@@ -\d+(,\d+)? \+(\d+)(,\d+)? @@.*", line)
                 if not matches:
                     continue
                 line_number = matches.groups()[1]
                 current_start_line = int(line_number)
-            elif line.startswith('+'):
+            elif line.startswith("+"):
                 current_lines.append(line[1:])
 
         finish_section(current_file, current_start_line, current_lines)
@@ -80,7 +82,7 @@ class Checker:
         for section in sections:
             # section => (file_name_index, base_line_number, lines)
             if verbose:
-                print('check section %s:%s' % (section[0], section[1]))
+                print("check section %s:%s" % (section[0], section[1]))
             for i in range(len(section[2])):
                 current_offset += 1
                 line_indexes[current_offset] = (section[0], section[1] + i)
@@ -92,15 +94,19 @@ class Checker:
                 file_name_index, line_no = line_indexes[i]
                 print(self._file_name_cache.get(file_name_index) + ":" + str(line_no))
 
-        return self.check_changed_lines(options, changed_lines, line_indexes, changed_files)
+        return self.check_changed_lines(
+            options, changed_lines, line_indexes, changed_files
+        )
 
     def run(self, options, mr, changed_files):
         if options.all:
             return self.check_changed_files(options, mr, changed_files)
         else:
             if options.changed:
-                changed_lines = mr.GetChangedLines().split('\n')
+                changed_lines = mr.GetChangedLines().split("\n")
             else:
-                changed_lines = mr.GetLastCommitLines().split('\n')
+                changed_lines = mr.GetLastCommitLines().split("\n")
 
-            return self._check_changed_lines(options, changed_files, changed_lines, options.verbose)
+            return self._check_changed_lines(
+                options, changed_files, changed_lines, options.verbose
+            )

@@ -20,15 +20,16 @@ import yaml
 
 COCOAPODS_VERSION_FILE_PATH = "CocoaPods-version.yml"
 COCOAPODS_GIT_SOURCE_DEFAULT_BRANCH = "master"
-TRUNK_REPO_URL = 'https://github.com/CocoaPods/Specs.git'
+TRUNK_REPO_URL = "https://github.com/CocoaPods/Specs.git"
+
 
 def random_string(size=8, chars=string.ascii_letters + string.digits):
-    return ''.join(random.choice(chars) for _ in range(size))
+    return "".join(random.choice(chars) for _ in range(size))
 
 
 def convert_podspec_to_json(spec):
     temp_spec_path = os.path.join(tempfile.gettempdir(), random_string() + ".podspec")
-    with open(temp_spec_path, 'w') as f:
+    with open(temp_spec_path, "w") as f:
         f.write(spec)
 
     spec = convert_podspec_file_to_json(temp_spec_path)
@@ -71,13 +72,18 @@ class ExternalSource(Source):
             spec = convert_podspec_file_to_json(spec_file=podspec_path)
             return json.loads(spec)
         else:
-            with open(f'{podspec_path}.json', 'r') as f:
+            with open(f"{podspec_path}.json", "r") as f:
                 return json.load(f)
 
 
 class GitSource(Source):
 
-    def __init__(self, url=TRUNK_REPO_URL, branch=COCOAPODS_GIT_SOURCE_DEFAULT_BRANCH, specs_dir="Specs"):
+    def __init__(
+        self,
+        url=TRUNK_REPO_URL,
+        branch=COCOAPODS_GIT_SOURCE_DEFAULT_BRANCH,
+        specs_dir="Specs",
+    ):
         super().__init__()
         self.url = url
         self.branch = branch
@@ -86,8 +92,11 @@ class GitSource(Source):
 
     def _get_metadata(self):
         cmd = [
-            'git', 'archive', f'--remote={self.url}',
-            self.branch, COCOAPODS_VERSION_FILE_PATH
+            "git",
+            "archive",
+            f"--remote={self.url}",
+            self.branch,
+            COCOAPODS_VERSION_FILE_PATH,
         ]
 
         try:
@@ -105,15 +114,22 @@ class GitSource(Source):
     def _get_podspec_file(self, pod_name, file_type):
         pod = self.pods.get(pod_name)
         podspec_file_path = "/".join(
-            [p for p in (self.specs_dir, pod.path_prefix, pod_name, pod.version, f'{pod_name}.{file_type}') if p]
+            [
+                p
+                for p in (
+                    self.specs_dir,
+                    pod.path_prefix,
+                    pod_name,
+                    pod.version,
+                    f"{pod_name}.{file_type}",
+                )
+                if p
+            ]
         )
-        cmd = [
-            'git', 'archive', f'--remote={self.url}',
-            self.branch, podspec_file_path
-        ]
+        cmd = ["git", "archive", f"--remote={self.url}", self.branch, podspec_file_path]
 
         output = subprocess.check_output(cmd)
-        tar = tarfile.open(fileobj=io.BytesIO(output), mode='r')
+        tar = tarfile.open(fileobj=io.BytesIO(output), mode="r")
         tar.getmember(podspec_file_path)
         return tar.extractfile(podspec_file_path).read().decode()
 
@@ -126,7 +142,7 @@ class GitSource(Source):
                 content = convert_podspec_to_json(content)
             except subprocess.CalledProcessError as e:
                 raise Exception(f"podspec file of pod {pod_name} not found") from e
-        print(content)        
+        print(content)
         podspec = json.loads(content)
 
         return podspec

@@ -4,8 +4,8 @@
 # LICENSE file in the root directory of this source tree.
 
 import subprocess, sys, os
-from merge_request import MergeRequest
-from config import config
+from utils.merge_request import MergeRequest
+from config import Config
 
 def runCommand(cmd):
   p = subprocess.Popen(cmd,
@@ -32,7 +32,7 @@ def get_check_format_command(path):
   check_format_command = _CHECK_FORMAT_COMMAND
   
   # read configuration
-  npx_no_install = config.get('npx-no-install')
+  npx_no_install = Config.get('npx-no-install')
   if npx_no_install:
     check_format_command = _CHECK_FORMAT_COMMAND_NO_INSTALL
   

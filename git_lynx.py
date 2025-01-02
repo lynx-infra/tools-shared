@@ -13,8 +13,8 @@ import sys
 import subprocess
 
 from checkers.checker import Checker, CheckResult
-from merge_request import MergeRequest
-from config import config
+from utils.merge_request import MergeRequest
+from config import Config
 
 
 def print_cutting_line(desc="", width=80):
@@ -189,7 +189,7 @@ def CMDcheck(parser, args):
     
     # read configuration
     skipped_checks_of_config = []
-    skip_list = config.get('skip')
+    skip_list = Config.get('skip')
     if isinstance(skip_list,list):
         skipped_checks_of_config.extend(skip_list)
     
@@ -322,4 +322,5 @@ def main(argv):
 
 
 if __name__ == '__main__':
+    Config.init()
     sys.exit(main(sys.argv[1:]))

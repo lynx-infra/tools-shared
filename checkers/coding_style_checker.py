@@ -3,8 +3,8 @@
 # LICENSE file in the root directory of this source tree.
 import sys
 
-import code_format_helper
-import format_file_filter
+import checkers.code_format_helper
+import checkers.format_file_filter
 from checkers.checker import Checker, CheckResult
 
 

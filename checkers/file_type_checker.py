@@ -6,28 +6,10 @@ import os
 import subprocess
 
 from checkers.checker import Checker, CheckResult
+from config import Config
 
 
-BINARY_FILES_ALLOW_LIST = [
-    "Android/LynxAndroid/src/main/res/*",
-    "Android/LynxExample/*",
-    "Android/gradle/wrapper/*",
-    "core/src/renderer/css/testing/*",
-    "playground/darwin/ios/LynxExample/LynxExample/Assets.xcassets/AppIcon.appiconset/*",
-    "third_party/binding/idl-codegen/third_party/doc/_static/*",
-    "Android/LynxExample/src/main/res/mipmap-xhdpi/*",
-    "Android/LynxAndroid/src/main/res/drawable/*"
-    "^explorer/darwin/ios/lynx_explorer/*",
-    "^explorer/homepage/assets/images/*",
-    "^platform/android/gradle/wrapper/*",
-    "^platform/android/lynx_android/src/main/res/*",
-    "^platform/android/lynx_example/*",
-    "^platform/android/lynx_test_bench/*",
-    "platform/android/lynx_devtool/src/main/res/drawable/*",
-    "explorer/android/gradle/*",
-    "explorer/android/lynx_explorer/*",
-    "explorer/android/lynx_explorer/src/main/res"
-]
+BINARY_FILES_ALLOW_LIST = (Config.get('FILE_TYPE_CHECKER')['BINARY_FILES_ALLOW_LIST'] or []) if Config.get('FILE_TYPE_CHECKER') is not None else []
 
 
 def is_binary(file_path):

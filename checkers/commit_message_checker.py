@@ -4,7 +4,7 @@
 import sys
 
 from checkers.checker import Checker, CheckResult
-from commit_message_helper import CheckCommitMessage
+from checkers.commit_message_helper import CheckCommitMessage
 
 
 class CommitMessageChecker(Checker):

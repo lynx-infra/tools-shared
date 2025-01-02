@@ -26,34 +26,17 @@ import os
 import sys
 import re
 import argparse
+from config import Config
 
 # Set the directory where the header path needs to be processed.
-DEFAULT_NEED_PROCESSED_FILE_DIRS = [
-  "embedder",
-  "Lynx",
-  "LynxDevtool",
-  "Android",
-  "testing"
-]
+DEFAULT_NEED_PROCESSED_FILE_DIRS = (Config.get('HEADER_PATH_CHECKER')['DEFAULT_NEED_PROCESSED_FILE_DIRS'] or []) if Config.get('HEADER_PATH_CHECKER') is not None else []
+
 # Set the directory where the header path doesn't need to be processed.
-DEFAULT_EXCLUDE_PROCESSED_FILES = [
-  "Lynx/platform/windows/example"
-]
+DEFAULT_EXCLUDE_PROCESSED_FILES = (Config.get('HEADER_PATH_CHECKER')['DEFAULT_EXCLUDE_PROCESSED_FILES'] or []) if Config.get('HEADER_PATH_CHECKER') is not None else []
 # Set the directory to find the header.
-DEFAULT_HEADER_SEARCH_DIRS = [
-  "Darwin",
-  "embedder",
-  "Lynx",
-  "LynxDevtool",
-  "third_party",
-  "Android",
-  "testing"
-]
+DEFAULT_HEADER_SEARCH_DIRS = (Config.get('HEADER_PATH_CHECKER')['DEFAULT_HEADER_SEARCH_DIRS']or [])  if Config.get('HEADER_PATH_CHECKER') is not None else []
 # Set the paths that prioritizes lookup headers.
-DEFAULT_FIRST_SEARCH_PATHS = [
-  "third_party/googletest/googletest/include",
-  "third_party/googletest/googlemock/include"
-]
+DEFAULT_FIRST_SEARCH_PATHS = (Config.get('HEADER_PATH_CHECKER')['DEFAULT_FIRST_SEARCH_PATHS']or [])  if Config.get('HEADER_PATH_CHECKER') is not None else []
 # Set the file suffixes that the header need to be processed.
 DEFAULT_FILE_SUFFIX_MATCH = [
   '.h',
@@ -65,13 +48,7 @@ DEFAULT_FILE_SUFFIX_MATCH = [
   '.mm'
 ]
 # Set headers or header paths that don't need to be processed.
-DEFAULT_EXCLUDE_PROCESSED_HEADERS = [
-  "napi.h",
-  "v8.h",
-  "v8-inspector.h",
-  "libplatform/libplatform.h",
-  "quickjs/include/"
-]
+DEFAULT_EXCLUDE_PROCESSED_HEADERS = (Config.get('HEADER_PATH_CHECKER')['DEFAULT_EXCLUDE_PROCESSED_HEADERS'] or []) if Config.get('HEADER_PATH_CHECKER') is not None else []
 # Project root directory
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 

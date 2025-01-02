@@ -10,3 +10,5 @@ root_dir = os.path.dirname(script_path)
 
 class Env:
     BUILD_TOOLS_PATH = os.path.join(root_dir, "buildtools")
+    JAVA_LINT_CONFIG_PATH = os.path.join(root_dir, "checkers", "java-lint-check")
+    SELF_ROOT_PATH = script_path

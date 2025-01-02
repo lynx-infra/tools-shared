@@ -1,0 +1,69 @@
+FILE_TYPE_CHECKER:
+  BINARY_FILES_ALLOW_LIST:
+    - "Android/LynxAndroid/src/main/res/*"
+    - "Android/LynxExample/*"
+    - "Android/gradle/wrapper/*"
+    - "core/src/renderer/css/testing/*"
+    - "playground/darwin/ios/LynxExample/LynxExample/Assets.xcassets/AppIcon.appiconset/*"
+    - "third_party/binding/idl-codegen/third_party/doc/_static/*"
+    - "Android/LynxExample/src/main/res/mipmap-xhdpi/*"
+    - "Android/LynxAndroid/src/main/res/drawable/*"
+    - "^explorer/darwin/ios/lynx_explorer/*"
+    - "^explorer/homepage/assets/images/*"
+    - "^platform/android/gradle/wrapper/*"
+    - "^platform/android/lynx_android/src/main/res/*"
+    - "^platform/android/lynx_example/*"
+    - "^platform/android/lynx_test_bench/*"
+    - "platform/android/lynx_devtool/src/main/res/drawable/*"
+    - "explorer/android/gradle/*"
+    - "explorer/android/lynx_explorer/*"
+    - "explorer/android/lynx_explorer/src/main/res"
+
+CODING_STYLE_CHECKER:
+  FORBIDDEN_SUFFIXES:
+    - "_jni.h"
+    - "pnpm-lock.yaml"
+    - "Podfile.yml"
+    - ".d.ts"
+    - ".r.ts"
+  FORBIDDEN_DIRS:
+    - "^core/build/gen/*"
+    - "^Lynx/lepus/quickjs/include/*"
+    - "^Android/LynxAndroid/src/main/jni/quickjs/*"
+    - "^oliver/(?!(lynx-kernel|type-lynx|type-lynx-test))/*"
+    - "^third_party/*"
+    - "^lynx/third_party/trace/native/perfetto/*"
+    - "^build/*"
+    - "^lynx/third_party/base/include/boost/*"
+    - "^lynx/third_party/(aes|double-conversion|modp_b64|rapidjson|binding|quickjs|napi)/*"
+    - "^lynx/playground/darwin/ios/LynxExample/LynxExample/Resource/"
+    - "^base/include/boost/*"
+
+HEADER_PATH_CHECKER:
+  DEFAULT_NEED_PROCESSED_FILE_DIRS:
+    - "embedder"
+    - "Lynx"
+    - "LynxDevtool"
+    - "Android"
+    - "testing"
+  DEFAULT_EXCLUDE_PROCESSED_FILES:
+    - "Lynx/platform/windows/example"
+  DEFAULT_HEADER_SEARCH_DIRS:
+    - "Darwin"
+    - "embedder"
+    - "Lynx"
+    - "LynxDevtool"
+    - "third_party"
+    - "Android"
+    - "testing"
+  DEFAULT_FIRST_SEARCH_PATHS:
+    - "third_party/googletest/googletest/include"
+    - "third_party/googletest/googlemock/include"
+  DEFAULT_EXCLUDE_PROCESSED_HEADERS:
+    - "napi.h"
+    - "v8.h"
+    - "v8-inspector.h"
+    - "libplatform/libplatform.h"
+    - "quickjs/include/"
+  
+

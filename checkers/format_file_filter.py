@@ -5,8 +5,8 @@
 
 import re
 import sys,os,subprocess
-from merge_request import MergeRequest
-from config import config
+from utils.merge_request import MergeRequest
+from config import Config
 gn_path = 'gn'
 
 # Only check format for following file types.
@@ -29,24 +29,9 @@ __FORMAT_COMMAND_NO_INSTALL = {
   '.gni': ['{} format '.format(gn_path)]
 }
 # Files endsWith these suffixes will not be checked.
-_FORBIDDEN_SUFFIXES = ['_jni.h', 'pnpm-lock.yaml', 'Podfile.yml', '.d.ts', '.r.ts']
+_FORBIDDEN_SUFFIXES = (Config.get('CODING_STYLE_CHECKER')['FORBIDDEN_SUFFIXES'] or []) if Config.get('CODING_STYLE_CHECKER') is not None else []
 # Files in these directories will not be checked.
-_FORBIDDEN_DIRS = [
-   '^core/build/gen/*',
-  '^Lynx/lepus/quickjs/include/*',
-  '^Android/LynxAndroid/src/main/jni/quickjs/*',
-  # skip all folders in oliver except lynx-kernel 
-  '^oliver/(?!(lynx-kernel|type-lynx|type-lynx-test))/*',
-  # skip all folders in third_party except
-  '^third_party/*',
-  # skip perfetto files
-  '^lynx/third_party/trace/native/perfetto/*',
-  '^build/*',
-  '^lynx/third_party/base/include/boost/*',
-  '^lynx/third_party/(aes|double-conversion|modp_b64|rapidjson|binding|quickjs|napi)/*',
-  '^lynx/playground/darwin/ios/LynxExample/LynxExample/Resource/',
-  '^base/include/boost/*',
-]
+_FORBIDDEN_DIRS = (Config.get('CODING_STYLE_CHECKER')['FORBIDDEN_DIRS'] or []) if Config.get('CODING_STYLE_CHECKER') is not None else []
 
 def filterFileExtension(path) :
   for ext in _FILE_EXTENSIONS:
@@ -73,7 +58,7 @@ def getFormatCommand(path):
   format_command = _FORMAT_COMMAND
   
   # read configuration
-  npx_no_install = config.get('npx-no-install')
+  npx_no_install = Config.get('npx-no-install')
   if npx_no_install:
     format_command = __FORMAT_COMMAND_NO_INSTALL
   

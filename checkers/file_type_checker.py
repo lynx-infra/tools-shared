@@ -18,7 +18,7 @@ BINARY_FILES_ALLOW_LIST = [
     "Android/LynxExample/src/main/res/mipmap-xhdpi/*",
     "Android/LynxAndroid/src/main/res/drawable/*"
     "^explorer/darwin/ios/lynx_explorer/*",
-    "^explorer/darwin/ios/lynx_explorer/*",
+    "^explorer/homepage/assets/images/*",
     "^platform/android/gradle/wrapper/*",
     "^platform/android/lynx_android/src/main/res/*",
     "^platform/android/lynx_example/*",

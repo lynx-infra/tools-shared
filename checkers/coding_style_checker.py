@@ -17,6 +17,7 @@ class CodingStyleChecker(Checker):
         print('Checking file format.')
         for filename in changed_files:
             if format_file_filter.shouldFormatFile(filename):
+                print(f"checking {filename}")
                 if not code_format_helper.check_format(filename):
                     failed_path.append(filename)
         if len(failed_path) > 0:

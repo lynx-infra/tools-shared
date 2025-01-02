@@ -61,6 +61,7 @@ class FileTypeChecker(Checker):
     def run(self, options, mr, changed_files):
         binary_files = []
         for filename in changed_files:
+            print(f"checking {filename}")
             if in_allow_list(filename):
                 continue
             if os.path.isdir(filename):

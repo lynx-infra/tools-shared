@@ -29,13 +29,13 @@ class PrecompiledHeader:
         return self._imports
 
     def generate(self):
-        result = ''
+        result = ""
         result += "#ifdef __OBJC__\n"
         result += get_platform_import_header(self._platform)
         result += "#else\n"
         result += "#ifndef FOUNDATION_EXPORT\n"
         result += "#if defined(__cplusplus)\n"
-        result += "#define FOUNDATION_EXPORT extern \"C\"\n"
+        result += '#define FOUNDATION_EXPORT extern "C"\n'
         result += "#else\n"
         result += "#define FOUNDATION_EXPORT extern\n"
         result += "#endif\n"
@@ -47,5 +47,5 @@ class PrecompiledHeader:
     def save_to(self, path):
         if not os.path.exists(os.path.dirname(path)):
             os.makedirs(os.path.dirname(path))
-        with open(path, 'w') as f:
+        with open(path, "w") as f:
             f.write(self.generate())

@@ -8,4 +8,4 @@ from cocoapods.targets.gn.base_target import BaseTarget
 
 class BundleData(BaseTarget):
 
-    type = 'bundle_data'
+    type = "bundle_data"

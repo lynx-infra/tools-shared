@@ -18,7 +18,12 @@ class ExternalDownloader(Downloader):
 
     @classmethod
     def download(
-        cls, source: dict, root_dir: str, target_dir: str = None, name: str = None, options: Namespace = None,
-        cache_dir: str = None
+        cls,
+        source: dict,
+        root_dir: str,
+        target_dir: str = None,
+        name: str = None,
+        options: Namespace = None,
+        cache_dir: str = None,
     ):
         pass

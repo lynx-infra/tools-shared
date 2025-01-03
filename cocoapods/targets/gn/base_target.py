@@ -13,7 +13,7 @@ TAB_WIDTH = 4
 
 
 def serialize_bool(value):
-    return 'true' if value else 'false'
+    return "true" if value else "false"
 
 
 def serialize_string(value):
@@ -32,7 +32,7 @@ SERIALIZERS = {
     bool: serialize_bool,
     str: serialize_string,
     Rebase: serialize_rebase,
-    tuple: serialize_tuple
+    tuple: serialize_tuple,
 }
 
 
@@ -45,14 +45,25 @@ def add_or_update_to_set(s, v):
 
 class BaseTarget:
     type = "source_set"
-    value_fields = [
-        "output_name", "output_extension", "output_prefix_override"
-    ]
+    value_fields = ["output_name", "output_extension", "output_prefix_override"]
     list_fields = [
-        "sources", "include_dirs", "frameworks", "framework_dirs", "deps",
-        "cflags", "cflags_cc", "cflags_objc", "cflags_objcc", "ldflags",
-        "libs", "lib_dirs", "public_configs", "defines", "configs",
-        "outputs", "public_deps"
+        "sources",
+        "include_dirs",
+        "frameworks",
+        "framework_dirs",
+        "deps",
+        "cflags",
+        "cflags_cc",
+        "cflags_objc",
+        "cflags_objcc",
+        "ldflags",
+        "libs",
+        "lib_dirs",
+        "public_configs",
+        "defines",
+        "configs",
+        "outputs",
+        "public_deps",
     ]
 
     def __init__(self, name=None):
@@ -66,32 +77,40 @@ class BaseTarget:
 
         for field in self.value_fields:
             self._list_attrs[field] = None
-            setattr(self, f'set_{field}', functools.partial(self.set_field, field))
+            setattr(self, f"set_{field}", functools.partial(self.set_field, field))
 
         for field in self.list_fields:
             self._list_attrs[field] = set()
-            setattr(self, f'add_{field}', functools.partial(self.add_to_field, field))
-            setattr(self, f'delete_{field}', functools.partial(self.delete_from_field, field))
+            setattr(self, f"add_{field}", functools.partial(self.add_to_field, field))
+            setattr(
+                self,
+                f"delete_{field}",
+                functools.partial(self.delete_from_field, field),
+            )
         for field in self.list_fields:
             self._removed_list_attrs[field] = set()
-            setattr(self, f'remove_{field}', functools.partial(self.remove_from_field, field))
+            setattr(
+                self,
+                f"remove_{field}",
+                functools.partial(self.remove_from_field, field),
+            )
 
     def __getattr__(self, item):
-        if item.startswith('__'):
+        if item.startswith("__"):
             return super().__getattr__(item)
         try:
             return self._list_attrs[item]
         except KeyError:
-            raise AttributeError(f'attribute {item} not found')
+            raise AttributeError(f"attribute {item} not found")
 
     def serialize_value(self, name, value, ident=0):
-        s = ''
+        s = ""
         s += f'{" " * ident}{name} = {SERIALIZERS[type(value)](value)}'
         return s
 
     def serialize_list(self, name, li, ident=0, append=False, remove=False):
         op = "+" if not remove else "-"
-        s = ''
+        s = ""
         s += f'{" " * ident}{name} {op if append or (name == "configs" and self.type != "group") else ""}= ['
         ident += TAB_WIDTH
         li = [SERIALIZERS[type(i)](i) for i in li if i is not None]
@@ -102,17 +121,25 @@ class BaseTarget:
         if li:
             s += f'\n{" " * ident}]'
         else:
-            s += ']'
+            s += "]"
         return s
 
-    def serialize_list_fields(self, list_attrs, ident=0, existing_fields=[], remove=False):
+    def serialize_list_fields(
+        self, list_attrs, ident=0, existing_fields=[], remove=False
+    ):
         s = ""
         for field, values in list_attrs.items():
             if isinstance(values, Iterable) and not isinstance(values, str):
                 if not values:
                     continue
                 s += "\n"
-                s += self.serialize_list(field, values, ident, append=(field in existing_fields), remove=remove)
+                s += self.serialize_list(
+                    field,
+                    values,
+                    ident,
+                    append=(field in existing_fields),
+                    remove=remove,
+                )
             elif values is not None:
                 s += self.serialize_value(field, values, ident)
                 s += "\n"
@@ -121,7 +148,7 @@ class BaseTarget:
 
     def set_field(self, field, value, condition=None):
         if field not in self.value_fields:
-            raise Exception(f'unknown value field {field}')
+            raise Exception(f"unknown value field {field}")
         if condition:
             item = self._condition_list_attrs.setdefault(condition, {})
             item[field] = value
@@ -131,7 +158,7 @@ class BaseTarget:
     # TODO(wangjianliang): combine following 2 functions
     def add_to_field(self, field, value, condition=None):
         if field not in self.list_fields:
-            raise Exception(f'unknown field {field}')
+            raise Exception(f"unknown field {field}")
 
         if condition:
             item = self._condition_list_attrs.setdefault(condition, {})
@@ -146,7 +173,7 @@ class BaseTarget:
 
     def remove_from_field(self, field, value, condition=None):
         if field not in self.list_fields:
-            raise Exception(f'unknown field {field}')
+            raise Exception(f"unknown field {field}")
 
         if condition:
             item = self._removed_condition_list_attrs.setdefault(condition, {})
@@ -161,7 +188,7 @@ class BaseTarget:
 
     def delete_from_field(self, field, value, condition=None):
         if field not in self.list_fields:
-            raise Exception(f'unknown field {field}')
+            raise Exception(f"unknown field {field}")
 
         if condition:
             item = self._condition_list_attrs.get(condition)
@@ -176,7 +203,7 @@ class BaseTarget:
 
     def __str__(self):
         ident = 0
-        s = ''
+        s = ""
         s += f'{self.type}("{self.name}") {{'
 
         serialized_fields = []
@@ -184,7 +211,9 @@ class BaseTarget:
 
         ident += TAB_WIDTH
         s += self.serialize_list_fields(self._list_attrs, ident, serialized_fields)
-        s += self.serialize_list_fields(self._removed_list_attrs, ident, serialized_removed_fields, remove=True)
+        s += self.serialize_list_fields(
+            self._removed_list_attrs, ident, serialized_removed_fields, remove=True
+        )
 
         ident -= TAB_WIDTH
 

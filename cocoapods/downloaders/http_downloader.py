@@ -15,26 +15,26 @@ from cocoapods.downloaders.downloader import Downloader
 
 
 class FileType:
-    TGZ = 'tgz'
-    TAR = 'tar'
-    TBZ = 'tbz'
-    TXZ = 'txz'
-    ZIP = 'zip'
-    DMG = 'dmg'
+    TGZ = "tgz"
+    TAR = "tar"
+    TBZ = "tbz"
+    TXZ = "txz"
+    ZIP = "zip"
+    DMG = "dmg"
 
 
 def type_with_url(url):
-    if re.findall(r'\.zip$', url):
+    if re.findall(r"\.zip$", url):
         return FileType.ZIP
-    elif re.findall(r'\.(tgz|tar\.gz)$', url):
+    elif re.findall(r"\.(tgz|tar\.gz)$", url):
         return FileType.TGZ
-    elif re.findall(r'\.tar$', url):
+    elif re.findall(r"\.tar$", url):
         return FileType.TAR
-    elif re.findall(r'\.(tbz|tar\.bz2)$', url):
+    elif re.findall(r"\.(tbz|tar\.bz2)$", url):
         return FileType.TBZ
-    elif re.findall(r'\.(txz|tar\.xz)$', url):
+    elif re.findall(r"\.(txz|tar\.xz)$", url):
         return FileType.TXZ
-    elif re.findall(r'\.dmg$', url):
+    elif re.findall(r"\.dmg$", url):
         return FileType.DMG
 
 
@@ -47,7 +47,7 @@ def should_flatten(file_type):
 
 def get_members(tar, strip):
     for member in tar.getmembers():
-        member.path = member.path.split('/', strip)[-1]
+        member.path = member.path.split("/", strip)[-1]
         yield member
 
 
@@ -57,23 +57,26 @@ class HttpDownloader(Downloader):
 
     @classmethod
     def download(
-        cls, source: dict, root_dir: str, target_dir: str = None, name: str = None, options: Namespace = None,
-        cache_dir: str = None
+        cls,
+        source: dict,
+        root_dir: str,
+        target_dir: str = None,
+        name: str = None,
+        options: Namespace = None,
+        cache_dir: str = None,
     ):
         url = source["http"]
-        req = urllib.request.Request(
-            source["http"], method='GET'
-        )
+        req = urllib.request.Request(source["http"], method="GET")
         res = urllib.request.urlopen(req, timeout=cls.timeout)
 
         file_obj = io.BytesIO(res.read())
         target_dir = target_dir or root_dir
         file_type = type_with_url(url)
         if file_type == FileType.ZIP:
-            compressed = zipfile.ZipFile(file=file_obj, mode='r')
+            compressed = zipfile.ZipFile(file=file_obj, mode="r")
             # compressed.extractall(target_dir)
         elif file_type in [FileType.TGZ, FileType.TXZ]:
-            compressed = tarfile.open(fileobj=file_obj, mode='r')
+            compressed = tarfile.open(fileobj=file_obj, mode="r")
             # compressed.extractall(target_dir)
         else:
             raise Exception(f"can not decompress file {url.split('/')[-1]}")

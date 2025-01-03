@@ -8,4 +8,4 @@ from cocoapods.targets.gn.base_target import BaseTarget
 
 class Group(BaseTarget):
 
-    type = 'group'
+    type = "group"

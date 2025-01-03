@@ -22,6 +22,7 @@ class SubSpec:
         self.pod = pod
         self.name = name
         self.deps = []
+
     def addDependencies(self, deps):
         self.deps += deps
 
@@ -49,19 +50,19 @@ class Pod:
     @property
     def local_source_dir(self):
         if self._local_source_dir is None:
-            raise Exception(f'Pod {self.name} not been downloaded yet')
+            raise Exception(f"Pod {self.name} not been downloaded yet")
         return self._local_source_dir
 
     @property
     def target_dir(self):
         if self._target_dir is None:
-            raise Exception(f'Pod {self.name} not been downloaded yet')
+            raise Exception(f"Pod {self.name} not been downloaded yet")
         return self._target_dir
 
     @property
     def path_prefix(self):
         metadata = self.source.metadata
-        prefix_length = sum(metadata.get('prefix_lengths', [0]))
+        prefix_length = sum(metadata.get("prefix_lengths", [0]))
         pod_name_digest = hashlib.md5(self.name.encode()).hexdigest()
         return os.path.join(*pod_name_digest[0:prefix_length]) if prefix_length else ""
 
@@ -72,10 +73,16 @@ class Pod:
 
         if self._cache_dir:
             spec_cache_path = os.path.join(
-                self._cache_dir, 'specs', self.name, self.version, f'{self.name}.podspec.json'
+                self._cache_dir,
+                "specs",
+                self.name,
+                self.version,
+                f"{self.name}.podspec.json",
             )
-            if not isinstance(self.source, ExternalSource) and os.path.exists(spec_cache_path):
-                with open(spec_cache_path, 'r') as f:
+            if not isinstance(self.source, ExternalSource) and os.path.exists(
+                spec_cache_path
+            ):
+                with open(spec_cache_path, "r") as f:
                     try:
                         spec_content = json.load(f)
                         self._spec = Specification(self, None, spec_content)
@@ -88,7 +95,7 @@ class Pod:
 
         if self._cache_dir:
             os.makedirs(os.path.dirname(spec_cache_path), exist_ok=True)
-            with open(spec_cache_path, 'w') as f:
+            with open(spec_cache_path, "w") as f:
                 json.dump(spec_content, f)
 
         self._spec = Specification(self, None, spec_content)
@@ -96,7 +103,9 @@ class Pod:
 
     def generate_pch(self, platform):
         pch = PrecompiledHeader(platform)
-        pch_path = os.path.join(self.target_dir, f'{self.name}-prefix{("-" + platform) or ""}.pch')
+        pch_path = os.path.join(
+            self.target_dir, f'{self.name}-prefix{("-" + platform) or ""}.pch'
+        )
         pch.save_to(pch_path)
         self._pch_files[platform] = pch_path
         return pch_path
@@ -115,8 +124,12 @@ class Pod:
             else:
                 need_downloading = False
                 if cache_dir:
-                    local_source_dir = os.path.join(cache_dir, 'sources', self.name, self.version)
-                    if not os.path.exists(local_source_dir) or not os.listdir(local_source_dir):
+                    local_source_dir = os.path.join(
+                        cache_dir, "sources", self.name, self.version
+                    )
+                    if not os.path.exists(local_source_dir) or not os.listdir(
+                        local_source_dir
+                    ):
                         need_downloading = True
                 else:
                     local_source_dir = create_temp_dir()
@@ -127,20 +140,27 @@ class Pod:
                         if not downloader.matched(self.spec):
                             continue
                         local_source_dir = downloader.download(
-                            self.spec.source, os.path.dirname(local_source_dir), target_dir=local_source_dir,
-                            name=self.name, cache_dir=cache_dir
+                            self.spec.source,
+                            os.path.dirname(local_source_dir),
+                            target_dir=local_source_dir,
+                            name=self.name,
+                            cache_dir=cache_dir,
                         )
                         break
 
-                    prepare_command = getattr(self.spec, 'prepare_command', "")
+                    prepare_command = getattr(self.spec, "prepare_command", "")
                     if prepare_command:
                         self._prepare_command = prepare_command
-                        subprocess.check_call(prepare_command, shell=True, cwd=local_source_dir)
+                        subprocess.check_call(
+                            prepare_command, shell=True, cwd=local_source_dir
+                        )
 
             files_accessor = FilesAccessor(local_source_dir, self.spec)
             all_files = files_accessor.get_all_files(full_path=True)
             for file in all_files:
-                target_path = os.path.join(target_dir, os.path.relpath(file, files_accessor.root_dir))
+                target_path = os.path.join(
+                    target_dir, os.path.relpath(file, files_accessor.root_dir)
+                )
                 target_files.append(target_path)
 
                 if os.path.exists(target_path):
@@ -157,8 +177,8 @@ class Pod:
             if not cache_dir:
                 shutil.rmtree(local_source_dir)
 
-            target_files.append(self.generate_pch('ios'))
-            target_files.append(self.generate_pch('osx'))
+            target_files.append(self.generate_pch("ios"))
+            target_files.append(self.generate_pch("osx"))
 
         self._local_source_dir = target_dir
         return target_files
@@ -168,23 +188,22 @@ class Pod:
             return None
 
         source = self.spec.source.copy()
-        if 'git' in source:
-            dep_info = {
-                'type': 'git',
-                'url': source.pop('git'),
-                **source
-            }
-        elif 'http' in source:
+        if "git" in source:
+            dep_info = {"type": "git", "url": source.pop("git"), **source}
+        elif "http" in source:
             dep_info = source
         else:
-            raise Exception('unknown source')
+            raise Exception("unknown source")
         return dep_info
 
     def get_header_mappings(self, root_dir):
         mappings = []
         for spec in self.spec.all_specs():
             mappings += [
-                (os.path.relpath(mapping[0], root_dir), os.path.relpath(mapping[1], root_dir))
+                (
+                    os.path.relpath(mapping[0], root_dir),
+                    os.path.relpath(mapping[1], root_dir),
+                )
                 for mapping in spec.header_mappings
             ]
         return mappings

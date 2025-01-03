@@ -6,33 +6,23 @@ import os
 import subprocess
 
 from checkers.checker import Checker, CheckResult
+from config import Config
 
 
-BINARY_FILES_ALLOW_LIST = [
-    "Android/LynxAndroid/src/main/res/*",
-    "Android/LynxExample/*",
-    "Android/gradle/wrapper/*",
-    "core/src/renderer/css/testing/*",
-    "playground/darwin/ios/LynxExample/LynxExample/Assets.xcassets/AppIcon.appiconset/*",
-    "third_party/binding/idl-codegen/third_party/doc/_static/*",
-    "Android/LynxExample/src/main/res/mipmap-xhdpi/*",
-    "Android/LynxAndroid/src/main/res/drawable/*"
-    "^explorer/darwin/ios/lynx_explorer/*",
-    "^explorer/homepage/assets/images/*",
-    "^platform/android/gradle/wrapper/*",
-    "^platform/android/lynx_android/src/main/res/*",
-    "^platform/android/lynx_example/*",
-    "^platform/android/lynx_test_bench/*",
-    "platform/android/lynx_devtool/src/main/res/drawable/*",
-    "explorer/android/gradle/*",
-    "explorer/android/lynx_explorer/*",
-    "explorer/android/lynx_explorer/src/main/res"
-]
+BINARY_FILES_ALLOW_LIST = (
+    (
+        Config.get("FILE_TYPE_CHECKER")["BINARY_FILES_ALLOW_LIST"]
+        if "BINARY_FILES_ALLOW_LIST" in Config.get("FILE_TYPE_CHECKER")
+        else []
+    )
+    if Config.get("FILE_TYPE_CHECKER") is not None
+    else []
+)
 
 
 def is_binary(file_path):
-    chars = bytearray({7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7f})
-    with open(file_path, 'rb') as f:
+    chars = bytearray({7, 8, 9, 10, 12, 13, 27} | set(range(0x20, 0x100)) - {0x7F})
+    with open(file_path, "rb") as f:
         return bool(f.read(1024).translate(None, chars))
 
 
@@ -41,26 +31,30 @@ def in_allow_list(file_path):
         if re.search(r, file_path):
             return True
     return False
+
+
 def is_lfs_files(file_path):
     lfs_files = get_lfs_files()
     if file_path in lfs_files:
         return True
     else:
         return False
-    
+
+
 def get_lfs_files():
-    output = subprocess.check_output(['git', 'lfs', 'ls-files', '--name-only'])
-    file_list = output.decode('utf-8').splitlines()
+    output = subprocess.check_output(["git", "lfs", "ls-files", "--name-only"])
+    file_list = output.decode("utf-8").splitlines()
     return file_list
 
 
 class FileTypeChecker(Checker):
-    name = 'file-type'
-    help = 'Check file type'
+    name = "file-type"
+    help = "Check file type"
 
     def run(self, options, mr, changed_files):
         binary_files = []
         for filename in changed_files:
+            print(f"checking {filename}")
             if in_allow_list(filename):
                 continue
             if os.path.isdir(filename):
@@ -71,10 +65,12 @@ class FileTypeChecker(Checker):
                 binary_files.append(filename)
 
         if len(binary_files) > 0:
-            print('Please check the following errors:\n')
-            print('Binary files are not allowed to commit to the git repository. '
-                  'Please use Habitat tool to manage these files:\n')
-            print('    ' + '\n    '.join(binary_files))
+            print("Please check the following errors:\n")
+            print(
+                "Binary files are not allowed to commit to the git repository. "
+                "Please use Habitat tool to manage these files:\n"
+            )
+            print("    " + "\n    ".join(binary_files))
             return CheckResult.FAILED
         else:
             return CheckResult.PASSED

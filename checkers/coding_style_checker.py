@@ -3,20 +3,21 @@
 # LICENSE file in the root directory of this source tree.
 import sys
 
-import code_format_helper
-import format_file_filter
+import checkers.code_format_helper as code_format_helper
+import checkers.format_file_filter as format_file_filter
 from checkers.checker import Checker, CheckResult
 
 
 class CodingStyleChecker(Checker):
-    name = 'coding-style'
-    help = 'Check coding style'
+    name = "coding-style"
+    help = "Check coding style"
 
     def run(self, options, mr, changed_files):
         failed_path = []
-        print('Checking file format.')
+        print("Checking file format.")
         for filename in changed_files:
             if format_file_filter.shouldFormatFile(filename):
+                print(f"checking {filename}")
                 if not code_format_helper.check_format(filename):
                     failed_path.append(filename)
         if len(failed_path) > 0:

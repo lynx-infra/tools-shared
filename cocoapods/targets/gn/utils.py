@@ -10,11 +10,11 @@ from cocoapods.targets.gn.group import Group
 from cocoapods.targets.gn.shared_library import SharedLibrary
 
 TARGETS = {
-    'source_set': BaseTarget,
-    'config': Config,
-    'group': Group,
-    'bundle_data': BundleData,
-    'shared_library': SharedLibrary,
+    "source_set": BaseTarget,
+    "config": Config,
+    "group": Group,
+    "bundle_data": BundleData,
+    "shared_library": SharedLibrary,
 }
 
 

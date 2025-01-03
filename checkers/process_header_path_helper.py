@@ -29,57 +29,27 @@ import argparse
 from config import Config
 
 # Set the directory where the header path needs to be processed.
-DEFAULT_NEED_PROCESSED_FILE_DIRS = (
-    (
-        Config.get("HEADER_PATH_CHECKER")["DEFAULT_NEED_PROCESSED_FILE_DIRS"]
-        if "DEFAULT_NEED_PROCESSED_FILE_DIRS" in Config.get("HEADER_PATH_CHECKER")
-        else []
-    )
-    if Config.get("HEADER_PATH_CHECKER") is not None
-    else []
+DEFAULT_NEED_PROCESSED_FILE_DIRS = Config.value(
+    "checker-config", "header-path-checker", "processed-file-dirs"
 )
 
 # Set the directory where the header path doesn't need to be processed.
-DEFAULT_EXCLUDE_PROCESSED_FILES = (
-    (
-        Config.get("HEADER_PATH_CHECKER")["DEFAULT_EXCLUDE_PROCESSED_FILES"]
-        if "DEFAULT_EXCLUDE_PROCESSED_FILES" in Config.get("HEADER_PATH_CHECKER")
-        else []
-    )
-    if Config.get("HEADER_PATH_CHECKER") is not None
-    else []
+DEFAULT_EXCLUDE_PROCESSED_FILES = Config.value(
+    "checker-config", "header-path-checker", "exclude-processed-file-dirs"
 )
 # Set the directory to find the header.
-DEFAULT_HEADER_SEARCH_DIRS = (
-    (
-        Config.get("HEADER_PATH_CHECKER")["DEFAULT_HEADER_SEARCH_DIRS"]
-        if "DEFAULT_HEADER_SEARCH_DIRS" in Config.get("HEADER_PATH_CHECKER")
-        else []
-    )
-    if Config.get("HEADER_PATH_CHECKER") is not None
-    else []
+DEFAULT_HEADER_SEARCH_DIRS = Config.value(
+    "checker-config", "header-path-checker", "header-search-paths"
 )
 # Set the paths that prioritizes lookup headers.
-DEFAULT_FIRST_SEARCH_PATHS = (
-    (
-        Config.get("HEADER_PATH_CHECKER")["DEFAULT_FIRST_SEARCH_PATHS"]
-        if "DEFAULT_FIRST_SEARCH_PATHS" in Config.get("HEADER_PATH_CHECKER")
-        else []
-    )
-    if Config.get("HEADER_PATH_CHECKER") is not None
-    else []
+DEFAULT_FIRST_SEARCH_PATHS = Config.value(
+    "checker-config", "header-path-checker", "first-header-search-paths"
 )
 # Set the file suffixes that the header need to be processed.
 DEFAULT_FILE_SUFFIX_MATCH = [".h", ".hpp", ".c", ".cc", ".cpp", ".m", ".mm"]
 # Set headers or header paths that don't need to be processed.
-DEFAULT_EXCLUDE_PROCESSED_HEADERS = (
-    (
-        Config.get("HEADER_PATH_CHECKER")["DEFAULT_EXCLUDE_PROCESSED_HEADERS"]
-        if "DEFAULT_EXCLUDE_PROCESSED_HEADERS" in Config.get("HEADER_PATH_CHECKER")
-        else []
-    )
-    if Config.get("HEADER_PATH_CHECKER") is not None
-    else []
+DEFAULT_EXCLUDE_PROCESSED_HEADERS = Config.value(
+    "checker-config", "header-path-checker", "ignore-header-files"
 )
 # Project root directory
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))

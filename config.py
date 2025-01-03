@@ -6,6 +6,7 @@ import os
 from utils.merge_request import MergeRequest
 import subprocess
 import sys
+from checkers.default_config import checker_default_config
 
 
 class Config:
@@ -13,9 +14,13 @@ class Config:
 
     @staticmethod
     def init():
+        # merge checker default config
+        Config.data["checker-config"] = checker_default_config
+
+        # merge custom config
         mr = MergeRequest()
         root_dir = mr.GetRootDirectory()
-        config_path = os.path.join(root_dir, "tools_shared.yml")
+        config_path = os.path.join(root_dir, ".tools_shared")
         if os.path.exists(config_path):
             try:
                 import yaml
@@ -25,13 +30,41 @@ class Config:
                 )
                 import yaml
             with open(config_path, encoding="utf-8") as config_f:
-                Config.data = yaml.load(config_f, Loader=yaml.FullLoader)
+                Config.data = Config.merge(
+                    Config.data, yaml.load(config_f, Loader=yaml.FullLoader)
+                )
+
+    @staticmethod
+    def merge(target, source):
+        for key, value in source.items():
+            if key not in target:
+                raise KeyError(f"Key not found: {key}")
+            if isinstance(value, dict) and isinstance(target[key], dict):
+                target[key] = Config.merge(target[key], value)
+            else:
+                target[key] = value
+        return target
 
     @staticmethod
     def get(key):
         return Config.data.get(key)
 
+    @staticmethod
+    def value(*args):
+        target_obj = Config.data
+        index = 1
+        for arg in args:
+            if arg in target_obj:
+                if index == len(args):
+                    return target_obj[arg]
+                else:
+                    index += 1
+                    target_obj = target_obj[arg]
+            else:
+                return None
+
 
 if __name__ == "__main__":
     Config.init()
-    print(Config.get("FILE_TYPE_CHECKER")["BINARY_FILES_ALLOW_LIST"])
+    # print(Config.value("checker-config", "file-type-checker"))
+    print(Config.data)

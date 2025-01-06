@@ -23,5 +23,9 @@ git lynx check --list
 git lynx check
 ```
 
+### Custom configuration
+tools-shared has built-in default configurations. To meet your needs, you can manually provide a configuration file named tools-shared.yml in the root directory of the repository to override the default configurations.  
+
+You can continue to check the detailed configuration information [here](./docs/README_CONFIGURATION.md).
 ## [License]
 tools-shared is Apache licensed, as found in the [LICENSE](LICENSE) file.

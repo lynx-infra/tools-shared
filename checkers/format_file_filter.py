@@ -45,25 +45,11 @@ __FORMAT_COMMAND_NO_INSTALL = {
     ".gni": ["{} format ".format(gn_path)],
 }
 # Files endsWith these suffixes will not be checked.
-_FORBIDDEN_SUFFIXES = (
-    (
-        Config.get("CODING_STYLE_CHECKER")["FORBIDDEN_SUFFIXES"]
-        if "FORBIDDEN_SUFFIXES" in Config.get("CODING_STYLE_CHECKER")
-        else []
-    )
-    if Config.get("CODING_STYLE_CHECKER") is not None
-    else []
+_FORBIDDEN_SUFFIXES = Config.value(
+    "checker-config", "coding-style-checker", "ignore-suffixes"
 )
 # Files in these directories will not be checked.
-_FORBIDDEN_DIRS = (
-    (
-        Config.get("CODING_STYLE_CHECKER")["FORBIDDEN_DIRS"]
-        if "FORBIDDEN_DIRS" in Config.get("CODING_STYLE_CHECKER")
-        else []
-    )
-    if Config.get("CODING_STYLE_CHECKER") is not None
-    else []
-)
+_FORBIDDEN_DIRS = Config.value("checker-config", "coding-style-checker", "ignore-dirs")
 
 
 def filterFileExtension(path):

@@ -9,14 +9,8 @@ from checkers.checker import Checker, CheckResult
 from config import Config
 
 
-BINARY_FILES_ALLOW_LIST = (
-    (
-        Config.get("FILE_TYPE_CHECKER")["BINARY_FILES_ALLOW_LIST"]
-        if "BINARY_FILES_ALLOW_LIST" in Config.get("FILE_TYPE_CHECKER")
-        else []
-    )
-    if Config.get("FILE_TYPE_CHECKER") is not None
-    else []
+BINARY_FILES_ALLOW_LIST = Config.value(
+    "checker-config", "file-type-checker", "binary-files-allow-list"
 )
 
 

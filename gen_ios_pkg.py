@@ -29,7 +29,7 @@ def run_command(command, check=True):
 
 def change_podspec_and_get_source_files(repo_name):
     print("run generate_podspec")
-    run_command(f"bundle install --path ./bundle/")
+    run_command(f"SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk bundle install --path ./bundle/")
     run_command("pwd")
     run_command(
         f"bundle exec pod ipc spec {repo_name}.podspec > {repo_name}.podspec.json"
@@ -42,10 +42,6 @@ def change_podspec_and_get_source_files(repo_name):
         prepare_command = content["prepare_command"]
         run_command(prepare_command)
 
-    # use the newly generated podspec
-    run_command(
-        f"bundle exec pod ipc spec {repo_name}.podspec > {repo_name}.podspec.json"
-    )
     with open(f"{repo_name}.podspec.json", "r") as f:
         content = json.load(f)
 
@@ -104,6 +100,7 @@ def copy_to_target_folder(source_files, repo_name, source_dirs):
     @repo_name: name of repository
     @source_dirs: additional dirs need to be preserved
     """
+    run_command(f"rm -rf {target_dir}")
     run_command(f"mkdir {target_dir}")
     print("copy files to target directory")
     current_directory = os.getcwd()
@@ -142,23 +139,19 @@ def copy_to_target_folder(source_files, repo_name, source_dirs):
 def replace_source_of_podspec(repo_name, tag):
     # only for github
     content = None
-    with open(f"{repo_name}.podspec", "r") as f:
-        content = f.read()
+    with open(f"{repo_name}.podspec.json", "r") as f:
+        content = json.load(f)
 
-    pattern = "s.source\s?=\s?{.*?}"
     source_code_repo = os.environ.get("GITHUB_REPOSITORY")
     ref = os.environ.get("GITHUB_REF")
     if ref:
         ref = ref.replace("refs/tags/", "")
-    target_string = f's.source = {{ :http =>  "https://github.com/{source_code_repo}/releases/download/{tag}/{repo_name}.zip" }}'
-    new_content = re.sub(pattern, target_string, content)
+    target_source = {}
+    target_source["http"] = f"https://github.com/{source_code_repo}/releases/download/{tag}/{repo_name}.zip"
+    content["source"] = target_source
     # update the podspec
-    with open(f"{repo_name}.podspec", "w") as f:
-        f.write(new_content)
-
-    run_command(
-        f"bundle exec pod ipc spec {repo_name}.podspec > {repo_name}.podspec.json"
-    )
+    with open(f"{repo_name}.podspec.json", "w") as f:
+        json.dump(content, f, indent=4)
 
 
 def main():

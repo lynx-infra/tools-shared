@@ -5,4 +5,6 @@
 
 BASENAME="${0%/*}"
 
+export BUILDTOOLS_DIR="${BASENAME}/buildtools"
+export PATH=$BASENAME:${BUILDTOOLS_DIR}/clang-format:${BUILDTOOLS_DIR}/gn:${BUILDTOOLS_DIR}/node/bin:$PATH
 python3 $BASENAME/git_lynx.py $@

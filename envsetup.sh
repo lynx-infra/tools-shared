@@ -14,7 +14,4 @@ else
     exit 1
 fi
 
-# NPM configuration
-export NPM_CONFIG_UPDATE_NOTIFIER=false
-
 export PATH=$BASEDIR:$PATH

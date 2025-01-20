@@ -13,6 +13,7 @@ import sys
 import subprocess
 
 from checkers.checker import Checker, CheckResult
+from checkers.checker_manager import CheckerManager
 from utils.merge_request import MergeRequest
 from config import Config
 
@@ -26,46 +27,6 @@ def print_cutting_line(desc="", width=80):
     else:
         line = "=" * width
     print(line)
-
-
-def find_classes(module, is_target=None, handle_error=None, recursive=True):
-    classes = set()
-    submodules = []
-    if not inspect.ismodule(module):
-        return classes
-    for info, name, is_pkg in pkgutil.iter_modules(module.__path__):
-        full_name = module.__name__ + "." + name
-        mod = sys.modules.get(full_name)
-        if not mod:
-            try:
-                mod = info.find_module(full_name).load_module(full_name)
-            except AttributeError:
-                mod = info.find_spec(full_name).loader.load_module(full_name)
-            except Exception as e:
-                print(e)
-                if handle_error:
-                    handle_error(e)
-                continue
-        if is_pkg and recursive:
-            submodules.append(mod)
-        else:
-            classes = classes.union(
-                [
-                    c[1]
-                    for c in inspect.getmembers(mod, inspect.isclass)
-                    if (
-                        (is_target is None or is_target(c[1]))
-                        and c[1].__module__ == mod.__name__
-                    )
-                ]
-            )
-    for m in submodules:
-        classes = classes.union(
-            find_classes(
-                m, is_target=is_target, handle_error=handle_error, recursive=recursive
-            )
-        )
-    return classes
 
 
 # git lynx build: Run build.
@@ -115,20 +76,20 @@ def CMDcheck(parser, args):
     parser.add_option("--changed", action="store_true", help="Check all changed files")
     parser.add_option("--verbose", action="store_true", help="Print details")
 
+    parser.add_option(
+        "--ignore", help="Ignore checkers, separated with commas", default="none"
+    )
+
     options, args = parser.parse_args(args)
 
-    def is_checker(cls):
-        return issubclass(cls, Checker) and cls != Checker
-
-    checker_classes = {
-        c.name: c for c in find_classes(checkers, is_checker, recursive=False)
-    }
+    checker_manager = CheckerManager(options.ignore)
 
     if options.list:
         print("Available checkers:")
         print(
             "\n\n".join(
-                "  " + name + ": " + cls.help for name, cls in checker_classes.items()
+                "  " + name + ": " + cls.help
+                for name, cls in checker_manager.checker_classes.items()
             )
         )
         return
@@ -151,53 +112,29 @@ def CMDcheck(parser, args):
     # to skip CQ jobs dependency-check and macros-check as well as local git lynx check of
     # deps and macro.
     log = mr.GetCommitLog().split("\n")
-    job_checkers = {
-        "coding-style-check": ["coding-style"],
-        "commit-check": ["commit-message"],
-        "copyright-notice-check": ["copyright"],
-        "macros-check": ["macro"],
-        "cpplint-check": ["cpplint"],
-        "java-lint-check": ["java-lint"],
-        "file-type-and-spell-check": ["file-type", "spell"],
-        "deps-permission-check": ["deps-permission"],
-        "dependency-check": ["deps"],
-        "android-check-style": ["android-style"],
-    }
-
-    # read configuration
-    skipped_checks_of_config = []
-    skip_list = Config.get("skip")
-    if isinstance(skip_list, list):
-        skipped_checks_of_config.extend(skip_list)
-
-    skipped_checks_of_commit = []
+    skipped_checks = []
     for line in log:
         if line.startswith("SkipChecks:"):
-            skipped_jobs = line.split(":", 1)[1].split(",")
-            for job in skipped_jobs:
-                skipped_checks_of_commit.extend(job_checkers.get(job.strip(), []))
+            items = line.split(":", 1)[1].split(",")
+            skipped_checks.extend([i.strip() for i in items])
 
-    if skipped_checks_of_commit:
-        print(f"{skipped_checks_of_commit} has been skipped due to commit message.")
-    if skipped_checks_of_config:
-        print(f"{skipped_checks_of_config} has been skipped due to configuration.")
+    if skipped_checks:
+        print(f"{skipped_checks} has been skipped due to commit message.")
 
     # filter checkers
     target_checkers = []
     if options.checkers == "all":
         target_checkers = [
             c()
-            for c in checker_classes.values()
-            if c.name not in skipped_checks_of_commit
-            and c.name not in skipped_checks_of_config
+            for c in checker_manager.checker_classes.values()
+            if c.name not in skipped_checks
         ]
     else:
         checker_names = options.checkers.split(",")
         for name in checker_names:
-            if name not in checker_classes:
+            if name not in checker_manager.checker_classes:
                 raise Exception("Checker " + name + " not found")
-            target_checkers.append(checker_classes.get(name)())
-
+            target_checkers.append(checker_manager.checker_classes.get(name)())
     old_cwd = os.getcwd()
     os.chdir(mr.GetRootDirectory())
     try:

@@ -29,7 +29,9 @@ def run_command(command, check=True):
 
 def change_podspec_and_get_source_files(repo_name):
     print("run generate_podspec")
-    run_command(f"SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk bundle install --path ./bundle/")
+    run_command(
+        f"SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk bundle install --path ./bundle/"
+    )
     run_command("pwd")
     run_command(
         f"bundle exec pod ipc spec {repo_name}.podspec > {repo_name}.podspec.json"
@@ -147,7 +149,9 @@ def replace_source_of_podspec(repo_name, tag):
     if ref:
         ref = ref.replace("refs/tags/", "")
     target_source = {}
-    target_source["http"] = f"https://github.com/{source_code_repo}/releases/download/{tag}/{repo_name}.zip"
+    target_source["http"] = (
+        f"https://github.com/{source_code_repo}/releases/download/{tag}/{repo_name}.zip"
+    )
     content["source"] = target_source
     # update the podspec
     with open(f"{repo_name}.podspec.json", "w") as f:

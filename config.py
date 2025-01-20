@@ -16,7 +16,7 @@ class Config:
     def init():
         # merge checker default config
         Config.data["checker-config"] = checker_default_config
-
+        Config.data["external_checker_path"] = None
         # merge custom config
         mr = MergeRequest()
         root_dir = mr.GetRootDirectory()

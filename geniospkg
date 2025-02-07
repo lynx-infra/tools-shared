@@ -33,8 +33,6 @@ if [ "$PACKAGE_ENV" = "local" ]; then
     else
         cd package
     fi
-elif [ "$PACKAGE_ENV" = "prod" ]; then
-    echo -e "\033[31mWarning: Please note that the non-packaged files will be deleted in the prod environment.\033[0m"
 fi
 
 python3 $BASENAME/gen_ios_pkg.py "$@"

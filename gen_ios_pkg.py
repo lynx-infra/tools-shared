@@ -27,24 +27,29 @@ def run_command(command, check=True):
         ["bash", "-c", command], stderr=subprocess.STDOUT, check=check, text=True
     )
 
-def get_github_release_url(repo_name,tag_name):
+
+def get_github_release_url(repo_name, tag_name):
     source_code_repo = os.environ.get("GITHUB_REPOSITORY")
     token = os.environ.get("GITHUB_TOKEN")
     header = {
         "Accept": "Accept: application/vnd.github+json",
-        "authorization":f"Bearer {token}"
+        "authorization": f"Bearer {token}",
     }
-    res = requests.get(f"https://api.github.com/repos/{source_code_repo}/releases/tags/{tag_name}",headers=header)
+    res = requests.get(
+        f"https://api.github.com/repos/{source_code_repo}/releases/tags/{tag_name}",
+        headers=header,
+    )
     print(f"get the release info: {res.json()}")
     for asset in res.json()["assets"]:
-        if asset['name'] == f"{repo_name}.zip":
-          return asset['url']
+        if asset["name"] == f"{repo_name}.zip":
+            return asset["url"]
     return ""
 
-def get_source_files(repo_name):
+
+def get_source_files(repo_name, cache_path):
     print("run generate_podspec")
     run_command(
-        f"SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk bundle install --path ./bundle/"
+        f"SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk bundle install --path {cache_path}"
     )
     run_command(
         f"bundle exec pod ipc spec {repo_name}.podspec > {repo_name}.podspec.json"
@@ -161,7 +166,7 @@ def replace_source_of_podspec(repo_name, tag, is_private_repo, no_json):
         # update the podspec
         with open(f"{repo_name}.podspec.json", "w") as f:
             json.dump(content, f, indent=4)
-    
+
     if no_json and is_private_repo:
         pattern_source = "(\S+.source\s*=\s*{)\s*:git\s*=>[\s\S]*?(})"
         pattern_prepare_command = "(\S+.prepare_command\s*=\s*)<<-CMD[\s\S]*?CMD"
@@ -169,18 +174,45 @@ def replace_source_of_podspec(repo_name, tag, is_private_repo, no_json):
         with open(f"{repo_name}.podspec", "r") as f:
             content = f.read()
         content = re.sub(pattern_prepare_command, r'\1""', content)
-        content = re.sub(pattern_source, f"\\1 :http => \"{zip_url}\",type: :zip,:headers => [ \"Accept: application/octet-stream\",\"Authorization: token #{{ ENV['GITHUB_TOKEN'] }}\" ]\\2", content)
+        content = re.sub(
+            pattern_source,
+            f'\\1 :http => "{zip_url}",type: :zip,:headers => [ "Accept: application/octet-stream","Authorization: token #{{ ENV[\'GITHUB_TOKEN\'] }}" ]\\2',
+            content,
+        )
         with open(f"{repo_name}.podspec", "w") as f:
             f.write(content)
 
+
 def main():
     parser = argparse.ArgumentParser(description="Generate a iOS source code zip")
-    parser.add_argument("--output_type", choices=['zip', 'podspec', 'both'], default='both', help="The valid output of this script")
+    parser.add_argument(
+        "--output_type",
+        choices=["zip", "podspec", "both"],
+        default="both",
+        help="The valid output of this script",
+    )
     # no_json means that using the podspec file as the final file rather than podspec.json file
-    parser.add_argument("--no_json", action="store_true", help="Whether to generate podspec.json")
-    parser.add_argument("--private_repo", action="store_true", help="Replace the source of podspec by private http zip link")
-    parser.add_argument("--public_repo", action="store_true", help="Replace the source of podspec by public http zip link")
-  
+    parser.add_argument(
+        "--no_json", action="store_true", help="Whether to generate podspec.json"
+    )
+    parser.add_argument(
+        "--private_repo",
+        action="store_true",
+        help="Replace the source of podspec by private http zip link",
+    )
+    parser.add_argument(
+        "--public_repo",
+        action="store_true",
+        help="Replace the source of podspec by public http zip link",
+    )
+
+    parser.add_argument(
+        "--cache_path",
+        type=str,
+        default="./bundle",
+        help="Set the ruby cache dir",
+    )
+
     parser.add_argument("--repo", type=str, help="Replace the source of podspec")
     parser.add_argument(
         "--delete",
@@ -193,10 +225,10 @@ def main():
 
     repo_name = args.repo
     source_dirs = ["build"]
-    
+
     # step1: generate the zip file
-    if args.output_type=='both' or args.output_type=='zip':
-        source_files = get_source_files(repo_name)
+    if args.output_type == "both" or args.output_type == "zip":
+        source_files = get_source_files(repo_name, args.cache_path)
 
         if args.delete:
             delete_useless_files(source_files, repo_name, source_dirs)
@@ -214,18 +246,22 @@ def main():
 
                 run_command(f"mkdir {target_dir}/{args.package_dir}")
                 run_command(f"mv {tmp_dir}/* {target_dir}/{args.package_dir}")
-                run_command(f"mv {tmp_dir}/.* {target_dir}/{args.package_dir}", check=False)
+                run_command(
+                    f"mv {tmp_dir}/.* {target_dir}/{args.package_dir}", check=False
+                )
 
             run_command(f'cd {target_dir} && zip -r ../{repo_name}.zip * -x "*.zip"')
         else:
             run_command(f'zip -r {repo_name}.zip * -x "*.zip"')
 
-     # step2: udapte the podspec file
-    if args.output_type=='both' or args.output_type=='podspec':
+    # step2: udapte the podspec file
+    if args.output_type == "both" or args.output_type == "podspec":
         if args.private_repo or args.public_repo:
             # replace the source of podspec
             print("start replacing source of podspec")
-            replace_source_of_podspec(repo_name, args.tag, args.private_repo,args.no_json)
+            replace_source_of_podspec(
+                repo_name, args.tag, args.private_repo, args.no_json
+            )
 
     if args.no_json:
         run_command(f"rm -rf {repo_name}.podspec.json")

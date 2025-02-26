@@ -38,9 +38,6 @@ def CMDbuild(parser, args):
         "--encoder-ut", action="store_true", help="Check encoder ut build"
     )
     parser.add_option("--debug", action="store_true", help="If --debug, Build debug ut")
-    parser.add_option(
-        "--enable-relax-tests", action="store_true", help="Check relax tests build"
-    )
     parser.add_option("--asan", action="store_true", help="run ut on asan mode")
     options, args = parser.parse_args(args)
     mr = MergeRequest()

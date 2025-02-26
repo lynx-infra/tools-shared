@@ -11,7 +11,7 @@ base_url = 'https://xxx'
 deps = {
     'buildtools/clang-format': {
         "type": "http",
-        "url": f"https://github.com/scanf3/buildtools/releases/download/clang-format-08947632/buildtools-clang-format-{system}-{machine}.tar.gz",
+        "url": f"https://github.com/lynx-infra/buildtools/releases/download/clang-format-020d2fb7/buildtools-clang-format-{system}-{machine}.tar.gz",
         "ignore_in_git": True,
     },
     'buildtools/gn': {
